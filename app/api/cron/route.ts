@@ -9,6 +9,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const force = new URL(req.url).searchParams.get('force') === 'true'
   const today = new Date()
   const dayOfWeek = today.getDay() // 0=Sun, 1=Mon
   const dayOfMonth = today.getDate()
@@ -22,8 +23,8 @@ export async function GET(req: NextRequest) {
   let subject = ''
   let accountsHtml = ''
 
-  if (dayOfMonth === 1) {
-    subject = '📊 Monthly net worth check-in'
+  if (dayOfMonth === 1 || force) {
+    subject = force && dayOfMonth !== 1 ? '🧪 Test email — Net Worth Tracker' : '📊 Monthly net worth check-in'
     accountsHtml = `
       <li>Indonesian Bank (IDR)</li>
       <li>Indonesian Shares (IDR)</li>
