@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { GoalCard } from '@/components/GoalCard'
+import { differenceInDays, format, parseISO } from 'date-fns'
 
 interface Goal {
   id: string
@@ -10,15 +10,25 @@ interface Goal {
   target_date: string | null
 }
 
+const fmtAUD = (v: number) =>
+  new Intl.NumberFormat('en-AU', { style: 'currency', currency: 'AUD', maximumFractionDigits: 0 }).format(v)
+
+function DaysLeftBadge({ targetDate }: { targetDate: string | null }) {
+  if (!targetDate) return null
+  const days = differenceInDays(parseISO(targetDate), new Date())
+  const cls = days < 30 ? 'badge-red' : days < 90 ? 'badge-amber' : 'badge-indigo'
+  return <span className={`badge ${cls}`}>{days > 0 ? `${days}d left` : 'Past due'}</span>
+}
+
 export default function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([])
   const [currentNW, setCurrentNW] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('')
   const [date, setDate] = useState('')
   const [adding, setAdding] = useState(false)
-  const [showForm, setShowForm] = useState(false)
 
   useEffect(() => {
     Promise.all([
@@ -55,95 +65,167 @@ export default function GoalsPage() {
   }
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Goals</h1>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1 style={{ fontSize: 28, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>Goals 🎯</h1>
         <button
           onClick={() => setShowForm(v => !v)}
-          className="bg-indigo-600 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-indigo-700 transition-colors"
+          className="btn-primary"
+          style={{ padding: '10px 20px' }}
         >
           {showForm ? 'Cancel' : '+ New Goal'}
         </button>
       </div>
 
+      {/* Inline form */}
       {showForm && (
-        <form
-          onSubmit={handleAdd}
-          className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm space-y-4"
-        >
-          <h2 className="font-semibold text-gray-800">New Goal</h2>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Goal name</label>
-            <input
-              type="text"
-              placeholder="e.g. Emergency fund, House deposit"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              required
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Target amount (AUD)</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">A$</span>
+        <div className="glass-card">
+          <h2 style={{ fontWeight: 700, fontSize: 16, color: 'var(--text-primary)', marginBottom: 20 }}>New Goal</h2>
+          <form onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div>
+              <label style={{ display: 'block', color: 'var(--text-secondary)', fontSize: 13, marginBottom: 6, fontWeight: 500 }}>
+                Goal name
+              </label>
               <input
-                type="number"
-                inputMode="decimal"
-                placeholder="50000"
-                value={amount}
-                onChange={e => setAmount(e.target.value)}
+                type="text"
+                placeholder="e.g. Emergency fund, House deposit"
+                value={name}
+                onChange={e => setName(e.target.value)}
                 required
-                min="1"
-                className="w-full pl-8 pr-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                className="input-field"
               />
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Target date <span className="text-gray-400 font-normal">(optional)</span>
-            </label>
-            <input
-              type="month"
-              value={date}
-              onChange={e => setDate(e.target.value ? e.target.value + '-01' : '')}
-              className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={adding}
-            className="w-full py-2.5 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 disabled:opacity-60 transition-colors text-sm"
-          >
-            {adding ? 'Adding…' : 'Add Goal'}
-          </button>
-        </form>
+            <div>
+              <label style={{ display: 'block', color: 'var(--text-secondary)', fontSize: 13, marginBottom: 6, fontWeight: 500 }}>
+                Target amount (AUD)
+              </label>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)', fontSize: 14 }}>
+                  A$
+                </span>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  placeholder="50000"
+                  value={amount}
+                  onChange={e => setAmount(e.target.value)}
+                  required
+                  min="1"
+                  className="input-field"
+                  style={{ paddingLeft: 36 }}
+                />
+              </div>
+            </div>
+            <div>
+              <label style={{ display: 'block', color: 'var(--text-secondary)', fontSize: 13, marginBottom: 6, fontWeight: 500 }}>
+                Target date <span style={{ color: 'var(--text-muted)' }}>(optional)</span>
+              </label>
+              <input
+                type="date"
+                value={date}
+                onChange={e => setDate(e.target.value)}
+                className="input-field"
+              />
+            </div>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+              <button type="submit" className="btn-primary" disabled={adding}>
+                {adding ? 'Adding…' : 'Add Goal'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 14 }}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
       )}
 
+      {/* Goals list */}
       {loading ? (
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {[1, 2].map(i => (
-            <div key={i} className="h-28 bg-gray-100 rounded-2xl animate-pulse" />
+            <div key={i} className="glass-card" style={{ height: 160, opacity: 0.4 }} />
           ))}
         </div>
       ) : goals.length === 0 ? (
-        <div className="text-center py-12 text-gray-400 text-sm">
-          No goals yet. Add one to start tracking your progress.
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
+          <div className="glass-card" style={{ textAlign: 'center', maxWidth: 360 }}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>🎯</div>
+            <h2 style={{ color: 'var(--text-primary)', fontWeight: 700, marginBottom: 8 }}>No goals yet</h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
+              Add one to start tracking your progress.
+            </p>
+          </div>
         </div>
       ) : (
-        <div className="space-y-3">
-          {goals.map(goal => (
-            <GoalCard
-              key={goal.id}
-              goal={goal}
-              currentNetWorthAUD={currentNW}
-              onDelete={deleteGoal}
-            />
-          ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {goals.map(goal => {
+            const pct = Math.min((currentNW / goal.target_amount_aud) * 100, 100)
+            const remaining = Math.max(goal.target_amount_aud - currentNW, 0)
+            return (
+              <div key={goal.id} className="glass-card" style={{ position: 'relative' }}>
+                {/* Delete button */}
+                <button
+                  onClick={() => deleteGoal(goal.id)}
+                  style={{
+                    position: 'absolute', top: 16, right: 16,
+                    background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)',
+                    borderRadius: 8, padding: '4px 10px', cursor: 'pointer',
+                    color: '#ef4444', fontSize: 14, lineHeight: 1,
+                  }}
+                  title="Delete goal"
+                >
+                  🗑
+                </button>
+
+                {/* Goal name */}
+                <h3 style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: 17, marginBottom: 12, paddingRight: 48 }}>
+                  {goal.name}
+                </h3>
+
+                {/* Two-col stats */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
+                  <div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Target</div>
+                    <div style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>{fmtAUD(goal.target_amount_aud)}</div>
+                  </div>
+                  {goal.target_date && (
+                    <div>
+                      <div style={{ color: 'var(--text-muted)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>Date</div>
+                      <div style={{ fontWeight: 700, color: 'var(--text-secondary)' }}>{format(parseISO(goal.target_date), 'MMM yyyy')}</div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Days badge */}
+                <div style={{ marginBottom: 12 }}>
+                  <DaysLeftBadge targetDate={goal.target_date} />
+                </div>
+
+                {/* Completion % */}
+                <div style={{ fontSize: 36, fontWeight: 800, color: 'var(--accent-indigo)', marginBottom: 10 }}>
+                  {pct.toFixed(0)}%
+                </div>
+
+                {/* Progress bar */}
+                <div className="progress-bar" style={{ marginBottom: 16 }}>
+                  <div className="progress-bar-fill" style={{ width: `${pct}%` }} />
+                </div>
+
+                {/* Footer */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, fontSize: 12, color: 'var(--text-muted)', borderTop: '1px solid var(--border)', paddingTop: 12 }}>
+                  <div>Current<br /><span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{fmtAUD(currentNW)}</span></div>
+                  <div style={{ textAlign: 'center' }}>To go<br /><span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{fmtAUD(remaining)}</span></div>
+                  <div style={{ textAlign: 'right' }}>Target<br /><span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{fmtAUD(goal.target_amount_aud)}</span></div>
+                </div>
+              </div>
+            )
+          })}
         </div>
       )}
     </div>
