@@ -32,22 +32,16 @@ export const ACCOUNTS: { id: string; name: string; account_type: AccountType; cu
   { id: 'australian_cash', name: 'Australian Cash', account_type: 'australian_cash', currency: 'AUD' },
 ]
 
-function getISOWeekNumber(date: Date): number {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
-}
-
 export function getAccountsDueToday(): AccountType[] {
   const today = new Date()
   const dayOfWeek = today.getDay()
+  const dayOfMonth = today.getDate()
 
-  if (dayOfWeek !== 1) return []
-
-  const weekNumber = getISOWeekNumber(today)
-  if (weekNumber % 2 === 0) {
+  if (dayOfMonth === 1) {
     return ['indonesian_bank', 'indonesian_shares', 'australian_cash']
   }
-  return ['australian_cash']
+  if (dayOfWeek === 1) {
+    return ['australian_cash']
+  }
+  return []
 }
