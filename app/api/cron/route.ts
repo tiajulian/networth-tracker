@@ -12,7 +12,6 @@ export async function GET(req: NextRequest) {
   const force = new URL(req.url).searchParams.get('force') === 'true'
   const today = new Date()
   const dayOfWeek = today.getDay() // 0=Sun, 1=Mon
-  const dayOfMonth = today.getDate()
   const appUrl = process.env.APP_URL ?? 'http://localhost:3000'
   const toEmail = process.env.REMINDER_EMAIL
 
@@ -20,11 +19,18 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ skipped: 'REMINDER_EMAIL not configured' })
   }
 
+  // ISO week number — used to determine biweekly full check-in
+  const d = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()))
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7))
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
+  const weekNumber = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
+  const isBiweeklyMonday = dayOfWeek === 1 && weekNumber % 2 === 0
+
   let subject = ''
   let accountsHtml = ''
 
-  if (dayOfMonth === 1 || force) {
-    subject = force && dayOfMonth !== 1 ? '🧪 Test email — Net Worth Tracker' : '📊 Monthly net worth check-in'
+  if (isBiweeklyMonday || force) {
+    subject = force ? '🧪 Test email — Net Worth Tracker' : '📊 Fortnightly net worth check-in'
     accountsHtml = `
       <li>Indonesian Bank (IDR)</li>
       <li>Indonesian Shares (IDR)</li>
