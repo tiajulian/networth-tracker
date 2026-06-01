@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   const today = new Date()
   const dayOfWeek = today.getDay() // 0=Sun, 1=Mon
   const dayOfMonth = today.getDate()
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const appUrl = process.env.APP_URL ?? 'http://localhost:3000'
   const toEmail = process.env.REMINDER_EMAIL
 
   if (!toEmail) {
