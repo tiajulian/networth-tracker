@@ -1,4 +1,4 @@
-export type AccountType = 'indonesian_bank' | 'indonesian_shares' | 'australian_cash'
+export type AccountType = 'indonesian_bank' | 'indonesian_shares' | 'australian_cash' | 'australian_shares'
 export type Currency = 'IDR' | 'AUD'
 
 export interface Account {
@@ -30,6 +30,7 @@ export const ACCOUNTS: { id: string; name: string; account_type: AccountType; cu
   { id: 'indonesian_bank', name: 'Indonesian Bank', account_type: 'indonesian_bank', currency: 'IDR' },
   { id: 'indonesian_shares', name: 'Indonesian Shares', account_type: 'indonesian_shares', currency: 'IDR' },
   { id: 'australian_cash', name: 'Australian Cash', account_type: 'australian_cash', currency: 'AUD' },
+  { id: 'australian_shares', name: 'Australian Shares', account_type: 'australian_shares', currency: 'AUD' },
 ]
 
 export function getAccountsDueToday(): AccountType[] {
@@ -38,7 +39,7 @@ export function getAccountsDueToday(): AccountType[] {
   const dayOfMonth = today.getDate()
 
   if (dayOfMonth === 1) {
-    return ['indonesian_bank', 'indonesian_shares', 'australian_cash']
+    return ['indonesian_bank', 'indonesian_shares', 'australian_cash', 'australian_shares']
   }
   if (dayOfWeek === 1) {
     return ['australian_cash']

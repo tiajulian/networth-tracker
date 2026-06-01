@@ -10,6 +10,7 @@ const ACCOUNTS = [
   { key: 'indonesian_bank', label: 'Indonesian Bank', currency: 'IDR', color: '#6366f1', symbol: 'Rp' },
   { key: 'indonesian_shares', label: 'Indonesian Shares', currency: 'IDR', color: '#8b5cf6', symbol: 'Rp' },
   { key: 'australian_cash', label: 'Australian Cash', currency: 'AUD', color: '#10b981', symbol: 'A$' },
+  { key: 'australian_shares', label: 'Australian Shares', currency: 'AUD', color: '#06b6d4', symbol: 'A$' },
 ]
 
 const fmtAUD = (v: number) =>
@@ -20,6 +21,7 @@ export default function EntryPage() {
     indonesian_bank: '',
     indonesian_shares: '',
     australian_cash: '',
+    australian_shares: '',
   })
   const [latestRaw, setLatestRaw] = useState<Record<string, number>>({})
   const [saving, setSaving] = useState(false)
@@ -34,13 +36,14 @@ export default function EntryPage() {
         indonesian_bank: raw['indonesian_bank'] != null ? String(raw['indonesian_bank']) : '',
         indonesian_shares: raw['indonesian_shares'] != null ? String(raw['indonesian_shares']) : '',
         australian_cash: raw['australian_cash'] != null ? String(raw['australian_cash']) : '',
+        australian_shares: raw['australian_shares'] != null ? String(raw['australian_shares']) : '',
       })
     })
   }, [])
 
   const toAUD = (key: string, val: string) => {
     const n = parseFloat(val) || 0
-    if (key === 'australian_cash') return n
+    if (key === 'australian_cash' || key === 'australian_shares') return n
     return n * IDR_TO_AUD
   }
 

@@ -14,6 +14,7 @@ interface Snapshot {
   indonesian_bank_aud: number
   indonesian_shares_aud: number
   australian_cash_aud: number
+  australian_shares_aud: number
 }
 interface Goal {
   id: string
@@ -267,6 +268,7 @@ export default function Dashboard() {
             { label: 'Indonesian Bank', value: cur.indonesian_bank_aud, color: '#6366f1', rawKey: 'indonesian_bank', isIDR: true },
             { label: 'Indonesian Shares', value: cur.indonesian_shares_aud, color: '#8b5cf6', rawKey: 'indonesian_shares', isIDR: true },
             { label: 'Australian Cash', value: cur.australian_cash_aud, color: '#10b981', rawKey: 'australian_cash', isIDR: false },
+            { label: 'Australian Shares', value: cur.australian_shares_aud, color: '#06b6d4', rawKey: 'australian_shares', isIDR: false },
           ].map(acc => {
             const pct = cur.total_aud > 0 ? (acc.value / cur.total_aud) * 100 : 0
             return (

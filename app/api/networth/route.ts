@@ -14,7 +14,7 @@ export async function GET() {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  const accountTypes: AccountType[] = ['indonesian_bank', 'indonesian_shares', 'australian_cash']
+  const accountTypes: AccountType[] = ['indonesian_bank', 'indonesian_shares', 'australian_cash', 'australian_shares']
   const lastKnown: Record<string, number> = {}
   const snapshots: Record<string, Record<string, number>> = {}
 
@@ -28,7 +28,8 @@ export async function GET() {
     const indonesian_bank_aud = (values['indonesian_bank'] ?? 0) * idrToAud
     const indonesian_shares_aud = (values['indonesian_shares'] ?? 0) * idrToAud
     const australian_cash_aud = values['australian_cash'] ?? 0
-    const total_aud = indonesian_bank_aud + indonesian_shares_aud + australian_cash_aud
+    const australian_shares_aud = values['australian_shares'] ?? 0
+    const total_aud = indonesian_bank_aud + indonesian_shares_aud + australian_cash_aud + australian_shares_aud
 
     return {
       date,
@@ -36,6 +37,7 @@ export async function GET() {
       indonesian_bank_aud: Math.round(indonesian_bank_aud),
       indonesian_shares_aud: Math.round(indonesian_shares_aud),
       australian_cash_aud: Math.round(australian_cash_aud),
+      australian_shares_aud: Math.round(australian_shares_aud),
     }
   })
 

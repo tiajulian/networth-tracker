@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
       <li>Indonesian Bank (IDR)</li>
       <li>Indonesian Shares (IDR)</li>
       <li>Australian Cash (AUD)</li>
+      <li>Australian Shares (AUD)</li>
     `
   } else if (dayOfWeek === 1) {
     subject = '💰 NetWorth — Weekly Australian Cash Update'

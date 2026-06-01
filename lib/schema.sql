@@ -2,7 +2,7 @@
 
 create table if not exists entries (
   id uuid primary key default gen_random_uuid(),
-  account_type text not null check (account_type in ('indonesian_bank','indonesian_shares','australian_cash','super')),
+  account_type text not null check (account_type in ('indonesian_bank','indonesian_shares','australian_cash','australian_shares','super')),
   amount numeric not null,
   currency text not null check (currency in ('IDR','AUD')),
   date date not null,
