@@ -104,7 +104,7 @@ export default function EntryPage() {
         <span style={{ fontSize: 28 }}>💰</span>
         <div>
           <div style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 4 }}>TOTAL NET WORTH</div>
-          <div style={{ fontSize: 32, fontWeight: 800, background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          <div style={{ fontSize: 'clamp(22px, 6vw, 32px)', fontWeight: 800, background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             {fmtAUD(totalAUD)}
           </div>
         </div>

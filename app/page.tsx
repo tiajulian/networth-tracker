@@ -144,14 +144,14 @@ export default function Dashboard() {
       </div>
 
       {/* Stat cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+      <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '12px' }}>
 
         {/* Net Worth */}
         <div className="stat-card">
           <div style={{ color: 'var(--text-muted)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
             Current Net Worth
           </div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
+          <div style={{ fontSize: 'clamp(18px, 4vw, 26px)', fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
             {cur ? fmtAUD(cur.total_aud) : '—'}
           </div>
           {change !== null && (
@@ -166,7 +166,7 @@ export default function Dashboard() {
           <div style={{ color: 'var(--text-muted)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
             All-Time High 🏆
           </div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
+          <div style={{ fontSize: 'clamp(18px, 4vw, 26px)', fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
             {fmtAUD(ath)}
           </div>
           {cur && cur.total_aud >= ath && (
@@ -198,7 +198,7 @@ export default function Dashboard() {
             <div style={{ color: 'var(--text-muted)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
               🎯 {primaryGoal.name}
             </div>
-            <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
+            <div style={{ fontSize: 'clamp(18px, 4vw, 26px)', fontWeight: 800, color: 'var(--text-primary)', marginBottom: 8 }}>
               {cur ? Math.min((cur.total_aud / primaryGoal.target_amount_aud) * 100, 100).toFixed(0) : 0}%
             </div>
             <div className="progress-bar" style={{ marginBottom: 8 }}>

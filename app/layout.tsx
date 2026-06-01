@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={geist.className}>
         <Nav />
-        <main style={{ maxWidth: '896px', margin: '0 auto', padding: '32px 16px' }}>
+        <main style={{ maxWidth: '896px', margin: '0 auto', padding: 'clamp(16px, 4vw, 32px) clamp(12px, 4vw, 16px)' }}>
           {children}
         </main>
       </body>
