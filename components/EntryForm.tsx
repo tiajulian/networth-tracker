@@ -14,7 +14,6 @@ const ACCOUNT_COLORS: Record<AccountType, string> = {
   indonesian_bank: 'bg-indigo-50 border-indigo-200',
   indonesian_shares: 'bg-purple-50 border-purple-200',
   australian_cash: 'bg-cyan-50 border-cyan-200',
-  super: 'bg-emerald-50 border-emerald-200',
 }
 
 export function EntryForm({ dueAccounts, latestRaw, onSaved }: Props) {

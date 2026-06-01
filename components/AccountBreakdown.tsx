@@ -6,14 +6,13 @@ interface Props {
   indonesian_bank_aud: number
   indonesian_shares_aud: number
   australian_cash_aud: number
-  super_aud: number
 }
 
-const COLORS = ['#6366f1', '#8b5cf6', '#06b6d4', '#10b981']
-const LABELS = ['Indonesian Bank', 'Indonesian Shares', 'Aus Cash', 'Super']
+const COLORS = ['#6366f1', '#8b5cf6', '#06b6d4']
+const LABELS = ['Indonesian Bank', 'Indonesian Shares', 'Aus Cash']
 
-export function AccountBreakdown({ indonesian_bank_aud, indonesian_shares_aud, australian_cash_aud, super_aud }: Props) {
-  const values = [indonesian_bank_aud, indonesian_shares_aud, australian_cash_aud, super_aud]
+export function AccountBreakdown({ indonesian_bank_aud, indonesian_shares_aud, australian_cash_aud }: Props) {
+  const values = [indonesian_bank_aud, indonesian_shares_aud, australian_cash_aud]
   const data = LABELS.map((name, i) => ({ name, value: values[i] })).filter(d => d.value > 0)
 
   if (data.length === 0) {

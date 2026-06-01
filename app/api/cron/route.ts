@@ -29,7 +29,6 @@ export async function GET(req: NextRequest) {
       <li>Indonesian Bank (IDR)</li>
       <li>Indonesian Shares (IDR)</li>
       <li>Australian Cash (AUD)</li>
-      <li>Super Account (AUD)</li>
     `
   } else if (dayOfWeek === 1) {
     subject = '💵 Weekly Australian Cash check-in'

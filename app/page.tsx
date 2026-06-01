@@ -16,7 +16,6 @@ interface NetWorthData {
     indonesian_bank_aud: number
     indonesian_shares_aud: number
     australian_cash_aud: number
-    super_aud: number
   }[]
   current: {
     date: string
@@ -24,7 +23,6 @@ interface NetWorthData {
     indonesian_bank_aud: number
     indonesian_shares_aud: number
     australian_cash_aud: number
-    super_aud: number
   } | null
   latestRaw: Record<string, number>
   idrToAud: number
@@ -98,11 +96,7 @@ export default function Dashboard() {
               <StatCard
                 label="Total Net Worth"
                 value={cur ? fmtAUD(cur.total_aud) : 'No data yet'}
-                sub={
-                  change !== null
-                    ? `${change >= 0 ? '+' : ''}${fmtAUD(change)} since last entry`
-                    : undefined
-                }
+                sub={change !== null ? `${change >= 0 ? '+' : ''}${fmtAUD(change)} since last entry` : undefined}
                 color={change !== null && change >= 0 ? 'bg-indigo-50' : 'bg-white'}
               />
             </div>
@@ -116,14 +110,12 @@ export default function Dashboard() {
               value={nw?.latestRaw['indonesian_shares'] != null ? fmtIDR(nw.latestRaw['indonesian_shares']) : '—'}
               sub={cur?.indonesian_shares_aud ? `≈ ${fmtAUD(cur.indonesian_shares_aud)}` : undefined}
             />
-            <StatCard
-              label="Australian Cash"
-              value={nw?.latestRaw['australian_cash'] != null ? fmtAUD(nw.latestRaw['australian_cash']) : '—'}
-            />
-            <StatCard
-              label="Super"
-              value={nw?.latestRaw['super'] != null ? fmtAUD(nw.latestRaw['super']) : '—'}
-            />
+            <div className="col-span-2">
+              <StatCard
+                label="Australian Cash"
+                value={nw?.latestRaw['australian_cash'] != null ? fmtAUD(nw.latestRaw['australian_cash']) : '—'}
+              />
+            </div>
           </div>
 
           <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
@@ -138,7 +130,6 @@ export default function Dashboard() {
                 indonesian_bank_aud={cur.indonesian_bank_aud}
                 indonesian_shares_aud={cur.indonesian_shares_aud}
                 australian_cash_aud={cur.australian_cash_aud}
-                super_aud={cur.super_aud}
               />
             </div>
           )}
@@ -162,9 +153,7 @@ export default function Dashboard() {
           {goals.length === 0 && !loading && (
             <div className="text-center py-4 text-gray-400 text-sm">
               No goals yet.{' '}
-              <a href="/goals" className="text-indigo-500 hover:underline">
-                Add one →
-              </a>
+              <a href="/goals" className="text-indigo-500 hover:underline">Add one →</a>
             </div>
           )}
         </>
