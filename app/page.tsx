@@ -3,10 +3,14 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
+  AreaChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ReferenceLine,
 } from 'recharts'
-import { format, parseISO, differenceInDays } from 'date-fns'
+import { format, parseISO, differenceInDays, addMonths } from 'date-fns'
+
+// Tweak these to change the projection without touching chart internals.
+const PROJECTION_MONTHLY_INCREMENT_AUD = 4000
+const GOAL_TARGET_FALLBACK_AUD = 50000
 
 interface Snapshot {
   date: string
@@ -40,12 +44,33 @@ const fmtYAxis = (v: number) =>
 
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null
+  const entry = payload.find((p: any) => p.value != null) ?? payload[0]
   return (
     <div className="custom-tooltip">
-      <div className="label">{label}</div>
-      <div className="value">{fmtAUD(payload[0].value)}</div>
+      <div className="label">{label}{entry.dataKey === 'projected_aud' ? ' (projected)' : ''}</div>
+      <div className="value">{fmtAUD(entry.value)}</div>
     </div>
   )
+}
+
+// Starts from the most recent snapshot and steps forward month-by-month
+// (same day-of-month) until the projected total reaches the goal target.
+function buildProjection(
+  start: { date: string; total_aud: number },
+  targetAmount: number,
+  monthlyIncrement: number = PROJECTION_MONTHLY_INCREMENT_AUD
+): { date: string; total_aud: number }[] {
+  const points: { date: string; total_aud: number }[] = []
+  if (monthlyIncrement <= 0) return points
+
+  let value = start.total_aud
+  let date = parseISO(start.date)
+  while (value < targetAmount && points.length < 600) {
+    date = addMonths(date, 1)
+    value += monthlyIncrement
+    points.push({ date: format(date, 'yyyy-MM-dd'), total_aud: value })
+  }
+  return points
 }
 
 function DaysLeftBadge({ targetDate }: { targetDate: string | null }) {
@@ -86,10 +111,27 @@ export default function Dashboard() {
   const daysSinceUpdate = cur ? differenceInDays(new Date(), parseISO(cur.date)) : 999
   const updateDue = daysSinceUpdate >= 14
 
-  const chartData = timeline.map(t => ({
+  const goalTarget = primaryGoal?.target_amount_aud ?? GOAL_TARGET_FALLBACK_AUD
+  const projectionPoints = cur ? buildProjection(cur, goalTarget, PROJECTION_MONTHLY_INCREMENT_AUD) : []
+
+  const historicalRows = timeline.map((t, i) => ({
     date: format(parseISO(t.date), 'd MMM'),
-    total_aud: t.total_aud,
+    total_aud: t.total_aud as number | undefined,
+    // Shared anchor point on the last real entry so the projected line connects with no gap.
+    projected_aud: (i === timeline.length - 1 ? t.total_aud : undefined) as number | undefined,
   }))
+  const projectionRows = projectionPoints.map(p => ({
+    date: format(parseISO(p.date), 'd MMM'),
+    total_aud: undefined as number | undefined,
+    projected_aud: p.total_aud as number | undefined,
+  }))
+  const chartData = [...historicalRows, ...projectionRows]
+
+  const maxProjectedValue = projectionRows.length
+    ? projectionRows[projectionRows.length - 1].projected_aud!
+    : (cur?.total_aud ?? 0)
+  const yMax = Math.max(10000, Math.ceil(Math.max(ath, maxProjectedValue, goalTarget) / 10000) * 10000)
+  const xAxisInterval = chartData.length > 10 ? 1 : 0
 
   if (loading) {
     return (
@@ -221,9 +263,19 @@ export default function Dashboard() {
 
       {/* Chart */}
       <div className="glass-card">
-        <h2 style={{ fontWeight: 700, fontSize: 16, color: 'var(--text-primary)', marginBottom: 20 }}>
+        <h2 style={{ fontWeight: 700, fontSize: 16, color: 'var(--text-primary)', marginBottom: 12 }}>
           Net Worth Growth
         </h2>
+        <div style={{ display: 'flex', gap: 16, marginBottom: 16, fontSize: 12, color: 'var(--text-muted)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 20, height: 0, display: 'inline-block', borderTop: '2.5px solid #6366f1' }} />
+            Current
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ width: 20, height: 0, display: 'inline-block', borderTop: '2.5px dashed #a5b4fc' }} />
+            Projected (+A$4k/mo)
+          </div>
+        </div>
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
             <defs>
@@ -233,8 +285,8 @@ export default function Dashboard() {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#1e2d45" vertical={false} />
-            <XAxis dataKey="date" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis tickFormatter={fmtYAxis} tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} width={64} />
+            <XAxis dataKey="date" interval={xAxisInterval} tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
+            <YAxis domain={[0, yMax]} tickFormatter={fmtYAxis} tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} width={64} />
             <Tooltip content={<CustomTooltip />} />
             {primaryGoal && (
               <ReferenceLine
@@ -253,6 +305,17 @@ export default function Dashboard() {
               fill="url(#indigoGrad)"
               dot={{ fill: '#6366f1', r: 3, strokeWidth: 0 }}
               activeDot={{ r: 6, fill: '#818cf8', strokeWidth: 0 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="projected_aud"
+              name="Projected"
+              stroke="#a5b4fc"
+              strokeWidth={2.5}
+              strokeDasharray="7 5"
+              dot={false}
+              activeDot={{ r: 5, fill: '#a5b4fc', strokeWidth: 0 }}
+              isAnimationActive={false}
             />
           </AreaChart>
         </ResponsiveContainer>
