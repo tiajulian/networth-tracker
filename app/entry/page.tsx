@@ -101,7 +101,7 @@ export default function EntryPage() {
       <div style={{
         background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1))',
         border: '1px solid rgba(99,102,241,0.3)',
-        borderRadius: 16, padding: '20px 24px',
+        borderRadius: 16, padding: 'clamp(16px, 5vw, 20px) clamp(16px, 5vw, 24px)',
         display: 'flex', alignItems: 'center', gap: 16,
       }}>
         <span style={{ fontSize: 28 }}>💰</span>
@@ -121,7 +121,7 @@ export default function EntryPage() {
             background: 'var(--bg-card)',
             border: '1px solid var(--border)',
             borderLeft: `4px solid ${acc.color}`,
-            borderRadius: 16, padding: '20px 24px',
+            borderRadius: 16, padding: 'clamp(16px, 5vw, 20px) clamp(16px, 5vw, 24px)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
               <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: 15 }}>{acc.label}</span>

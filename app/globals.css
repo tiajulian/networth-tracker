@@ -145,6 +145,16 @@ input[type=number] { -moz-appearance: textfield; }
   gap: 12px;
 }
 
+/* Nav: hide scrollbar on the horizontal-scroll fallback for very narrow screens */
+nav div::-webkit-scrollbar { display: none; }
+
+/* Nav labels: full text by default, short label swaps in on narrow screens */
+.nav-label-short { display: none; }
+@media (max-width: 420px) {
+  .nav-label-full  { display: none; }
+  .nav-label-short { display: inline; }
+}
+
 /* Mobile responsive */
 @media (max-width: 480px) {
   .glass-card { padding: 16px; }

@@ -223,7 +223,7 @@ export default function Dashboard() {
             Total Growth
           </div>
           <div style={{
-            fontSize: 26, fontWeight: 800, marginBottom: 8,
+            fontSize: 'clamp(18px, 4vw, 26px)', fontWeight: 800, marginBottom: 8,
             color: totalGrowth !== null && totalGrowth >= 0 ? 'var(--accent-green)' : 'var(--accent-red)',
           }}>
             {totalGrowth !== null ? `${totalGrowth >= 0 ? '+' : ''}${totalGrowth.toFixed(1)}%` : '—'}
@@ -266,7 +266,7 @@ export default function Dashboard() {
         <h2 style={{ fontWeight: 700, fontSize: 16, color: 'var(--text-primary)', marginBottom: 12 }}>
           Net Worth Growth
         </h2>
-        <div style={{ display: 'flex', gap: 16, marginBottom: 16, fontSize: 12, color: 'var(--text-muted)' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 16, fontSize: 12, color: 'var(--text-muted)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ width: 20, height: 0, display: 'inline-block', borderTop: '2.5px solid #6366f1' }} />
             Current
@@ -392,7 +392,7 @@ export default function Dashboard() {
                   <div className="progress-bar" style={{ marginBottom: 12 }}>
                     <div className="progress-bar-fill" style={{ width: `${pct}%` }} />
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, fontSize: 12, color: 'var(--text-muted)' }}>
+                  <div className="goal-footer" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, fontSize: 12, color: 'var(--text-muted)' }}>
                     <div>Current<br /><span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{fmtAUD(cur.total_aud)}</span></div>
                     <div style={{ textAlign: 'center' }}>To go<br /><span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{fmtAUD(remaining)}</span></div>
                     <div style={{ textAlign: 'right' }}>Target<br /><span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{fmtAUD(goal.target_amount_aud)}</span></div>
